@@ -133,7 +133,6 @@ public:
     {
         std::this_thread::sleep_for(std::chrono::seconds(5));
         updateJSON();
-        _condition.notify_all();
     }
   }
 
@@ -150,6 +149,7 @@ private:
       prev_game_over = curr_game_over;
       curr_game_over = new_game_over;
       _game_over = curr_game_over;
+      _condition.notify_all();
     }
     else
     {
@@ -218,7 +218,7 @@ struct Team
 
     bool resize_bool(int count)
     {
-        std::cout << "Changing size of team: " << _team_id << " to " << count << std::endl;
+        //std::cout << "Changing size of team: " << _team_id << " to " << count << std::endl;
         if(_gamers.size() > count)
         {
             while(_gamers.size() != count)
@@ -235,13 +235,13 @@ struct Team
             }
             _team_size = _gamers.size();
         }
-        std::cout << "Done changing. Current size of team " << _team_id << " :" << _team_size << std::endl;
+        //std::cout << "Done changing. Current size of team " << _team_id << " :" << _team_size << std::endl;
         return true;
     }
 
     void resize_void(int count) 
     {
-        std::cout << "Changing size of team: " << _team_id << " to " << count << std::endl;
+        //std::cout << "Changing size of team: " << _team_id << " to " << count << std::endl;
         if(_gamers.size() > count)
         {
             while(_gamers.size() != count)
@@ -258,7 +258,7 @@ struct Team
             }
             _team_size = _gamers.size();
         }
-        std::cout << "Done changing. Current size of team " << _team_id << " :" << _team_size << std::endl;
+        //std::cout << "Done changing. Current size of team " << _team_id << " :" << _team_size << std::endl;
     }
 
     Team(int team_id,int team_size) : 
@@ -322,13 +322,13 @@ int main()
         
         std::thread thr1([&team_1, &pingpong, &game_over, &data_changed, &data_reader, &team_2_resized]()
         {
-            std::cout << "Created new thread 1" << std::endl;
+            //std::cout << "Created new thread 1" << std::endl;
             std::unique_lock<std::mutex> lock(mutex_);
             
             while(!game_over)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                std::cout << "entered while!game_over 1" << std::endl;
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                //std::cout << "entered while!game_over 1" << std::endl;
                 for(auto i = 0; i < team_1._gamers.size(); i++)
                 {
                     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -351,7 +351,7 @@ int main()
             }
             condition_.notify_one();
             lock.unlock();
-            std::cout << "Team_1 ends." << std::endl;
+            //std::cout << "Team_1 ends." << std::endl;
 
             if(game_over)
             {
@@ -361,13 +361,13 @@ int main()
 
         std::thread thr2([&team_2, &pingpong, &game_over, &data_changed, &data_reader, &team_1_resized]()
         {
-            std::cout << "Created new thread 2" << std::endl;
+            //std::cout << "Created new thread 2" << std::endl;
 
             std::unique_lock<std::mutex> lock(mutex_);
             while(!game_over)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                std::cout << "entered while!game_over 2" << std::endl;
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                //std::cout << "entered while!game_over 2" << std::endl;
                 for(auto i = 0; i < team_2._gamers.size(); i++)
                 {
                     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -384,7 +384,7 @@ int main()
             }
             condition_.notify_one();
             lock.unlock();
-            std::cout << "Team_2 ends." << std::endl;
+            //std::cout << "Team_2 ends." << std::endl;
 
             if(game_over)
             {
@@ -400,6 +400,6 @@ int main()
             break;
         }
     }
-    
+
     return 0;
 }
