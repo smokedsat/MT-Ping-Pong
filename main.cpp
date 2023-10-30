@@ -6,8 +6,6 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 
-
-
 using json = nlohmann::json;
 
 struct PingPong
@@ -112,19 +110,20 @@ public:
   }
 
   void updateJSON() {
-    while (true) {
       file.open(filename);
-      if (file.is_open()) {
+      if (file.is_open()) 
+      {
         json_data.clear();
         json_data = json::parse(file);
         updateData();
-        printData();
+        //printData();
         file.close();
-      } else {
+      } 
+      else 
+      {
         std::cout << "Can't open file " << filename << std::endl;
         return;
       }
-    }
   }
 
   void watch()
@@ -179,7 +178,6 @@ private:
     }
   }
 };
-
 
 struct Gamer
 {
@@ -242,6 +240,17 @@ struct Team
     void resize_void(int count) 
     {
         //std::cout << "Changing size of team: " << _team_id << " to " << count << std::endl;
+        if(_gamers.empty() && count > 0)
+        {
+            while(_gamers.size() != count)
+            {
+                _gamers.push_back(Gamer(_gamers.size(),_team_id));
+            }
+        }
+        else if(!_gamers.empty() && count <= 0)
+        {
+
+        }
         if(_gamers.size() > count)
         {
             while(_gamers.size() != count)
@@ -264,18 +273,21 @@ struct Team
     Team(int team_id,int team_size) : 
     _team_id(team_id), _team_size(team_size)//, _data_changed(data_changed)
     { 
+        if(team_size < 0)
+        {
+            _team_size = 1;
+        }
+        else if(team_size == 0)
+        {
+            _team_size = 0;
+        }
+
         for(auto i = 0; i < _team_size; i++)
         {
             _gamers.push_back(Gamer(i + 1,_team_id));
         }
     }
 };
-
-void resizeTeams(Team & team_1, Team & team_2, int size)
-{
-    team_1.resize_void(size);
-    team_2.resize_void(size);
-}
 
 std::condition_variable condition_;
 std::mutex mutex_;
@@ -288,7 +300,10 @@ int main()
     bool data_readed = false;
 
     int team_size{3}, team_n1{1}, team_n2{2};
+
     PingPong pingpong;
+
+
     bool game_over = false;
     bool data_changed = false;
     
@@ -316,7 +331,7 @@ int main()
 
     while(true)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        //std::this_thread::sleep_for(std::chrono::seconds(2));
         std::unique_lock<std::mutex> reader_lock(mutex_for_reading);
         condition_for_reading.wait(reader_lock, [&data_readed]{return data_readed;});
         
