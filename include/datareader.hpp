@@ -12,7 +12,7 @@ struct DataReader {
 private:
   json json_data;
   std::ifstream file;
-  const std::string filename = "data.json";
+  std::string filename = "data.json";
   int prev_team_size = 0;
   bool prev_game_over = false;
   std::condition_variable cond;
@@ -44,6 +44,12 @@ public:
   {
     file.open(filename);
 
+    if (!file.is_open())
+    {
+      filename = filename + ".txt";
+      file.open(filename);
+    }
+    
     if (file.is_open()) {
       json_data = json::parse(file);
       _team_size = getTeamSizeFromJSON();
