@@ -1,4 +1,4 @@
-# MT Ping-Pong
+# MT-Ping-Pong
 
 ## О проекте
 
